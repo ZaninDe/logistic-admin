@@ -14,9 +14,9 @@ export async function POST(request: Request) {
       dt_lib: z.string().optional(),
       re: z.any().optional(),
       te: z.any().optional(),
-      pedido: z.number(),
-      nf: z.number().optional(),
-      valor: z.number(),
+      pedido: z.string().optional(),
+      nf: z.any().optional(),
+      valor: z.number().optional(),
       cliente: z.string().optional(),
       nome_fantasia: z.string().optional(),
       municipio: z.string().optional(),
@@ -24,7 +24,8 @@ export async function POST(request: Request) {
       peso: z.number().optional(),
       t: z.any().optional(),
       vendedor: z.string().optional(),
-      endereco: z.string(),
+      endereco: z.string().optional(),
+      orderCode: z.string().optional(),
     }),
   )
 
@@ -55,14 +56,18 @@ export async function GET(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  // const body = await request.json()
-  // const deleteSchema = z.object({
-  //   id: z.string(),
-  // })
+  const body = await request.json()
+  const deleteSchema = z.object({
+    id: z.string(),
+  })
 
-  // const { id } = deleteSchema.parse(body)
+  const { id } = deleteSchema.parse(body)
 
-  const sales = await prismadb.sale.deleteMany()
+  const sales = await prismadb.sale.deleteMany({
+    where: {
+      orderCode: id,
+    },
+  })
 
   return NextResponse.json(sales)
 }

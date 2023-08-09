@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Sale {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   orderType    String
   orderCode    String
   saleDate     DateTime
@@ -21,12 +21,4 @@ model Sale {
   seller       String
   totalPrice   Float
   fantasyName  String
-  DaySales     DaySales? @relation(fields: [daySalesId], references: [id])
-  daySalesId   String?   @db.ObjectId
-  createdAt    DateTime  @default(now())
-}
-
-model DaySales {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  sales Sale[]
 }

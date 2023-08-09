@@ -10,8 +10,8 @@ export default async function SalesPage() {
 
   const formatedSales: SalesColumn[] = sales.map((item) => ({
     tp_ped: item.orderType,
-    date: format(item.saleDate, 'do MMMM, yyyy', { locale: ptBR }),
-    date_lib: format(item.saleDate, 'do MMMM, yyyy', { locale: ptBR }),
+    date: format(item.saleDate, 'd/MM/yyyy', { locale: ptBR }),
+    date_lib: format(item.saleDate, 'd/MM/yyyy', { locale: ptBR }),
     nf: item.orderCode,
     valor: item.totalPrice,
     cliente: item.customerName,

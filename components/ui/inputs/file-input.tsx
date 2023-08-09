@@ -30,7 +30,7 @@ export const InputFile = ({ tableData, onTableData }: InputFileProps) => {
   }
 
   return (
-    <label className="w-full h-full bg-black px-4 py-2 rounded cursor-pointer">
+    <label className="w-full h-full bg-foreground px-4 py-2 rounded cursor-pointer text-background">
       <span>{fileName}</span>
       <input
         type="file"
