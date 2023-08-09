@@ -1,5 +1,4 @@
 import prismadb from '@/app/libs/prismadb'
-import { TableProps } from '@/app/sales/page'
 import { formatDate } from '@/app/utils/dateFormat'
 import { data } from 'autoprefixer'
 import { NextResponse } from 'next/server'
