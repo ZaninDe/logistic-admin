@@ -16,38 +16,6 @@ interface SaleDataProps {
 }
 
 export default function SaleClient({ data }: SaleDataProps) {
-  // const [tableData, setTableData] = useState<any[]>([])
-
-  // const handleSubmit = async () => {
-  //   try {
-  //     const fullAddressTable: SalesColumn[] = tableData.map((item: any) => ({
-  //       tp_ped: item[0],
-  //       date: item[1],
-  //       date_lib: item[2],
-  //       id: item[5],
-  //       nf: item[6],
-  //       valor: item[7],
-  //       cliente: item[8],
-  //       nome_fantasia: item[9],
-  //       peso: item[12],
-  //       vendedor: item[14],
-  //       endereco: item[15] + ' - ' + item[10],
-  //       orderCode: item[5],
-  //     }))
-
-  //     fullAddressTable.shift()
-
-  //     console.log(fullAddressTable)
-  //     const response = await axios.post(
-  //       'http://localhost:3000/api/sales',
-  //       fullAddressTable,
-  //     )
-
-  //     console.log(response.data)
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
   const [open, setOpen] = useState(false)
 
   const storeModal = useSaleModal()
