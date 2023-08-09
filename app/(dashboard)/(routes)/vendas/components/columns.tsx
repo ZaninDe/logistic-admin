@@ -6,7 +6,7 @@ export type SalesColumn = {
   tp_ped: string
   date: string
   date_lib: string
-  id: string
+  pedido: string
   nf: string
   valor: number
   cliente: string
@@ -30,7 +30,7 @@ export const columns: ColumnDef<SalesColumn>[] = [
     header: 'DT LIB',
   },
   {
-    accessorKey: 'id',
+    accessorKey: 'pedido',
     header: 'PEDIDO',
   },
   {

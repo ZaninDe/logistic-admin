@@ -9,29 +9,31 @@ export async function POST(request: Request) {
 
   const saleSchema = z.array(
     z.object({
-      tp_ped: z.string(),
-      date: z.string(),
-      dt_lib: z.string(),
+      tp_ped: z.string().optional(),
+      date: z.string().optional(),
+      dt_lib: z.string().optional(),
       re: z.any().optional(),
       te: z.any().optional(),
-      pedido: z.string(),
-      nf: z.any(),
-      valor: z.number(),
-      cliente: z.string(),
+      pedido: z.string().optional(),
+      nf: z.any().optional(),
+      valor: z.number().optional(),
+      cliente: z.string().optional(),
       nome_fantasia: z.string().optional(),
-      municipio: z.string(),
-      bairro: z.string(),
-      peso: z.number(),
+      municipio: z.string().optional(),
+      bairro: z.string().optional(),
+      peso: z.number().optional(),
       t: z.any().optional(),
-      vendedor: z.string(),
-      endereco: z.string(),
+      vendedor: z.string().optional(),
+      endereco: z.string().optional(),
+      orderCode: z.string().optional(),
     }),
   )
 
   const data = saleSchema.parse(body)
 
   const formatedData = data.map((data: any) => ({
-    orderCode: data.pedido,
+    orderType: data.tp_ped,
+    orderCode: data.pedido.toString(),
     saleDate: formatDate(data.date),
     customerName: data.cliente,
     totalWeight: data.peso,
