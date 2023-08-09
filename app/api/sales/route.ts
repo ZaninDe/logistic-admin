@@ -1,4 +1,6 @@
 import prismadb from '@/app/libs/prismadb'
+import { TableProps } from '@/app/sales/page'
+import { formatDate } from '@/app/utils/dateFormat'
 import { data } from 'autoprefixer'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -13,7 +15,7 @@ export async function POST(request: Request) {
       dt_lib: z.string(),
       re: z.any().optional(),
       te: z.any().optional(),
-      pedido: z.number(),
+      pedido: z.string(),
       nf: z.any(),
       valor: z.number(),
       cliente: z.string(),
@@ -29,25 +31,42 @@ export async function POST(request: Request) {
 
   const data = saleSchema.parse(body)
 
-  // const sale = await prismadb.sale.create({
-  //   data: {
-  //     orderCode,
-  //     saleDate,
-  //     customerName,
-  //     totalWeight,
-  //     address,
-  //     seller,
-  //     totalPrice,
-  //     fantasyName,
-  //   },
-  // })
+  const formatedData = data.map((data: any) => ({
+    orderCode: data.pedido,
+    saleDate: formatDate(data.date),
+    customerName: data.cliente,
+    totalWeight: data.peso,
+    address: data.endereco,
+    seller: data.vendedor,
+    totalPrice: data.valor,
+    fantasyName: data.nome_fantasia,
+  }))
 
-  console.log(data)
-  return NextResponse.json(data, { status: 201 })
+  const sales = await prismadb.sale.createMany({
+    data: formatedData,
+  })
+  return NextResponse.json(sales, { status: 201 })
 }
 
 export async function GET(request: Request) {
   const sales = await prismadb.sale.findMany()
+
+  return NextResponse.json(sales)
+}
+
+export async function DELETE(request: Request) {
+  const body = await request.json()
+  const deleteSchema = z.object({
+    id: z.string(),
+  })
+
+  const { id } = deleteSchema.parse(body)
+
+  const sales = await prismadb.sale.deleteMany({
+    where: {
+      orderCode: id,
+    },
+  })
 
   return NextResponse.json(sales)
 }

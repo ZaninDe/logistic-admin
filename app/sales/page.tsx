@@ -10,7 +10,7 @@ export interface TableProps {
   dt_lib: string
   re: string
   te: string
-  pedido: number
+  pedido: string
   nf: string
   valor: string
   cliente: string
@@ -34,7 +34,7 @@ const SalesPage = () => {
         dt_lib: item[2],
         re: item[3],
         te: item[4],
-        pedido: item[5],
+        pedido: item[5].toString(),
         nf: item[6],
         valor: item[7],
         cliente: item[8],
