@@ -11,9 +11,9 @@ datasource db {
 }
 
 model Sale {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   orderCode    String
-  saleDate     DateTime?
+  saleDate     DateTime
   customerName String
   totalWeight  Float
   address      String
