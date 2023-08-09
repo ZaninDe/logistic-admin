@@ -9,21 +9,21 @@ export async function POST(request: Request) {
 
   const saleSchema = z.array(
     z.object({
-      tp_ped: z.string(),
-      date: z.string(),
-      dt_lib: z.string(),
+      tp_ped: z.string().optional(),
+      date: z.string().optional(),
+      dt_lib: z.string().optional(),
       re: z.any().optional(),
       te: z.any().optional(),
-      pedido: z.string(),
-      nf: z.any(),
+      pedido: z.number(),
+      nf: z.number().optional(),
       valor: z.number(),
-      cliente: z.string(),
+      cliente: z.string().optional(),
       nome_fantasia: z.string().optional(),
-      municipio: z.string(),
-      bairro: z.string(),
-      peso: z.number(),
+      municipio: z.string().optional(),
+      bairro: z.string().optional(),
+      peso: z.number().optional(),
       t: z.any().optional(),
-      vendedor: z.string(),
+      vendedor: z.string().optional(),
       endereco: z.string(),
     }),
   )
@@ -31,7 +31,8 @@ export async function POST(request: Request) {
   const data = saleSchema.parse(body)
 
   const formatedData = data.map((data: any) => ({
-    orderCode: data.pedido,
+    orderType: data.tp_ped,
+    orderCode: data.pedido.toString(),
     saleDate: formatDate(data.date),
     customerName: data.cliente,
     totalWeight: data.peso,
@@ -54,18 +55,14 @@ export async function GET(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const body = await request.json()
-  const deleteSchema = z.object({
-    id: z.string(),
-  })
+  // const body = await request.json()
+  // const deleteSchema = z.object({
+  //   id: z.string(),
+  // })
 
-  const { id } = deleteSchema.parse(body)
+  // const { id } = deleteSchema.parse(body)
 
-  const sales = await prismadb.sale.deleteMany({
-    where: {
-      orderCode: id,
-    },
-  })
+  const sales = await prismadb.sale.deleteMany()
 
   return NextResponse.json(sales)
 }

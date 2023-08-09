@@ -9,6 +9,7 @@ import { DataTable } from '@/components/ui/data-table'
 import { useState } from 'react'
 import axios from 'axios'
 import { InputFile } from '@/components/ui/inputs/file-input'
+import { useRouter } from 'next/navigation'
 
 interface SaleDataProps {
   data: SalesColumn[]
@@ -16,6 +17,7 @@ interface SaleDataProps {
 
 export default function SaleClient({ data }: SaleDataProps) {
   const [tableData, setTableData] = useState<any[]>([])
+  const router = useRouter()
 
   const handleSubmit = async () => {
     try {
@@ -23,7 +25,7 @@ export default function SaleClient({ data }: SaleDataProps) {
         tp_ped: item[0],
         date: item[1],
         date_lib: item[2],
-        id: item[5],
+        pedido: item[5],
         nf: item[6],
         valor: item[7],
         cliente: item[8],
@@ -41,6 +43,7 @@ export default function SaleClient({ data }: SaleDataProps) {
         fullAddressTable,
       )
 
+      router.refresh()
       console.log(response.data)
     } catch (error) {
       console.log(error)
@@ -65,7 +68,7 @@ export default function SaleClient({ data }: SaleDataProps) {
       </div>
       <Separator />
 
-      <DataTable searchKey="label" columns={columns} data={data} />
+      <DataTable searchKey="pedido" columns={columns} data={data} />
     </>
   )
 }
