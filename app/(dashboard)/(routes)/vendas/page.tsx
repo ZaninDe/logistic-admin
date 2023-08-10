@@ -20,7 +20,9 @@ export default async function SalesPage() {
     vendedor: item?.seller,
     endereco: item?.address,
     pedido: item?.orderCode,
-    dataEntrega: format(item?.deliveryDate, 'd/MM/yyyy', { locale: ptBR }),
+    dataEntrega: format(item?.deliveryDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", {
+      locale: ptBR,
+    }),
   }))
 
   return (
