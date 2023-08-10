@@ -13,11 +13,10 @@ export default function Navbar() {
   }
 
   return (
-    <div className="border-b bg-background">
+    <div className="border-b bg-background py-2">
       <div className="flex h-16 items-center px-10">
         <MainNav toggle={toggle} isOpen={isOpen} />
         <Sidebar toggle={toggle} isOpen={isOpen} />
-        <div className="ml-auto flex items-center space-x-4"></div>
       </div>
     </div>
   )

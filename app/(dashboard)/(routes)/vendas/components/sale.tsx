@@ -7,8 +7,6 @@ import { SalesColumn, columns } from './columns'
 import { DataTable } from '@/components/ui/data-table'
 
 import { useState } from 'react'
-import axios from 'axios'
-import { InputFile } from '@/components/ui/inputs/file-input'
 import { useSaleModal } from '@/hooks/use-sale-modal'
 
 interface SaleDataProps {

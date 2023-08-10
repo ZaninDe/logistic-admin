@@ -70,7 +70,7 @@ export function SaleModal() {
       isOpen={storeModal.isOpen}
       onClose={storeModal.onClose}
     >
-      <div className="flex pb-10 pt-4 justify-end">
+      <div className="flex pb-10 pt-4 justify-center">
         <Button className="p-0 mr-4">
           <InputFile tableData={tableData} onTableData={setTableData} />
         </Button>
