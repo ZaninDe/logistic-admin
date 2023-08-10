@@ -1,6 +1,5 @@
 import prismadb from '@/app/libs/prismadb'
 import { formatDate } from '@/app/utils/dateFormat'
-import { data } from 'autoprefixer'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -26,6 +25,7 @@ export async function POST(request: Request) {
       vendedor: z.string().optional(),
       endereco: z.string().optional(),
       orderCode: z.string().optional(),
+      deliveryDate: z.string().optional(),
     }),
   )
 
@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     seller: data.vendedor,
     totalPrice: data.valor,
     fantasyName: data.nome_fantasia,
+    deliveryDate: data.deliveryDate,
   }))
 
   const sales = await prismadb.sale.createMany({
@@ -56,17 +57,17 @@ export async function GET(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const body = await request.json()
-  const deleteSchema = z.object({
-    id: z.string(),
-  })
+  // const body = await request.json()
+  // const deleteSchema = z.object({
+  //   id: z.string(),
+  // })
 
-  const { id } = deleteSchema.parse(body)
+  // const { id } = deleteSchema.parse(body)
 
   const sales = await prismadb.sale.deleteMany({
-    where: {
-      orderCode: id,
-    },
+    // where: {
+    //   orderCode: id,
+    // },
   })
 
   return NextResponse.json(sales)

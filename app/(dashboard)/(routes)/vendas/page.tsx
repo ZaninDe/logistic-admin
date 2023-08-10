@@ -9,17 +9,18 @@ export default async function SalesPage() {
   const sales = await prismadb.sale.findMany()
 
   const formatedSales: SalesColumn[] = sales.map((item) => ({
-    tp_ped: item.orderType,
-    date: format(item.saleDate, 'd/MM/yyyy', { locale: ptBR }),
-    date_lib: format(item.saleDate, 'd/MM/yyyy', { locale: ptBR }),
-    nf: item.orderCode,
-    valor: item.totalPrice,
-    cliente: item.customerName,
-    nome_fantasia: item.fantasyName,
-    peso: item.totalWeight,
-    vendedor: item.seller,
-    endereco: item.address,
-    pedido: item.orderCode,
+    tp_ped: item?.orderType,
+    date: format(item?.saleDate, 'd/MM/yyyy', { locale: ptBR }),
+    date_lib: format(item?.saleDate, 'd/MM/yyyy', { locale: ptBR }),
+    nf: item?.orderCode,
+    valor: item?.totalPrice,
+    cliente: item?.customerName,
+    nome_fantasia: item?.fantasyName,
+    peso: item?.totalWeight,
+    vendedor: item?.seller,
+    endereco: item?.address,
+    pedido: item?.orderCode,
+    dataEntrega: format(item?.deliveryDate, 'd/MM/yyyy', { locale: ptBR }),
   }))
 
   return (

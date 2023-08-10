@@ -21,4 +21,6 @@ model Sale {
   seller       String
   totalPrice   Float
   fantasyName  String
+  createdAt    DateTime @default(now())
+  deliveryDate DateTime
 }

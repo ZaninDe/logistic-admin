@@ -14,6 +14,7 @@ export type SalesColumn = {
   peso: number
   vendedor: string
   endereco: string
+  dataEntrega?: string
 }
 
 export const columns: ColumnDef<SalesColumn>[] = [
@@ -60,5 +61,9 @@ export const columns: ColumnDef<SalesColumn>[] = [
   {
     accessorKey: 'endereco',
     header: 'ENDEREÇO',
+  },
+  {
+    accessorKey: 'dataEntrega',
+    header: 'ENTREGA',
   },
 ]
