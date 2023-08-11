@@ -26,6 +26,7 @@ model Sale {
 }
 
 model Route {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  orders String[]
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  orders       String[]
+  deliveryDate DateTime
 }

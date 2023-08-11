@@ -1,4 +1,5 @@
 import axios from 'axios'
+import * as z from 'zod'
 import { NextResponse } from 'next/server'
 
 import prismadb from '@/app/libs/prismadb'
@@ -12,12 +13,11 @@ interface AddressAndWeight {
   address: string
   totalWeight: number
   order: string
-  deliveryDate?: string
+  deliveryDate: Date
 }
 
-interface VehicleWithAddresses {
-  name: string
-  addresses: string[]
+interface Routes {
+  deliveryDate: Date
   orders: string[]
 }
 
@@ -74,7 +74,7 @@ async function distanceToLastAddress(addresses: string[]): Promise<number> {
 async function optimizeRoutes(
   addressesAndCargo: AddressAndWeight[],
   vehicles: Vehicle[],
-): Promise<string[][]> {
+): Promise<Routes[]> {
   const sortedAddresses = addressesAndCargo
 
   if (!sortedAddresses) {
@@ -82,7 +82,7 @@ async function optimizeRoutes(
     console.error('Erro ao obter endereços ordenados')
     return []
   }
-  const vehiclesWithRoutes: string[][] = []
+  const routes: Routes[] = []
 
   const assignedAddresses = new Set<string>()
 
@@ -90,6 +90,7 @@ async function optimizeRoutes(
     const currentVehicleRoutes: string[] = []
     const orders: string[] = []
     let currentCargoAmount = 0
+    const deliveryDate = sortedAddresses[0]?.deliveryDate
 
     for (const address of sortedAddresses) {
       if (
@@ -113,14 +114,16 @@ async function optimizeRoutes(
     }
 
     if (currentVehicleRoutes.length > 0) {
-      vehiclesWithRoutes.push(
+      routes.push({
         // name: vehicle.name,
         // addresses: currentVehicleRoutes,
+        deliveryDate,
         orders,
-      )
+      })
     }
   }
-  return vehiclesWithRoutes
+  console.log(routes)
+  return routes
 }
 
 async function getSortedAddresses(addresses: AddressAndWeight[]) {
@@ -178,6 +181,7 @@ export async function POST(request: Request) {
   const adresses: AddressAndWeight[] = sales.map((sale) => ({
     address: sale.address,
     totalWeight: sale.totalWeight,
+    deliveryDate: sale.deliveryDate,
     order: sale.orderCode,
   }))
 
@@ -188,7 +192,8 @@ export async function POST(request: Request) {
     delivery.map(async (item) => {
       const route = await prismadb.route.createMany({
         data: {
-          orders: item,
+          orders: item.orders,
+          deliveryDate: item.deliveryDate,
         },
       })
     })

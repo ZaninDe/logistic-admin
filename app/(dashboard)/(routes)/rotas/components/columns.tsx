@@ -3,38 +3,37 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 export type RoutesColumn = {
-  pedido: string
-  veiculo: string
-  endereco: string
-  nf: string
-  nome_fantasia: string
-  peso: number
-  dataEntrega?: string
+  license_plate: string
+  vehicle_type: string // will be model in the future
+  driver: string // // will be model in the future
+  cities: string[]
+  totalWeight: number
+  delivery_date: string
 }
 
 export const columns: ColumnDef<RoutesColumn>[] = [
   {
-    accessorKey: 'veiculo',
+    accessorKey: 'license_plate',
+    header: 'PLACA',
+  },
+  {
+    accessorKey: 'vehicle_type',
     header: 'VEÍCULO',
   },
   {
-    accessorKey: 'nf',
-    header: 'NF',
+    accessorKey: 'driver',
+    header: 'MOTORISTA',
   },
   {
-    accessorKey: 'endereco',
-    header: 'ENDEREÇO',
+    accessorKey: 'cities',
+    header: 'CIDADES',
   },
   {
-    accessorKey: 'nome_fantasia',
-    header: 'NOME FANTASIA',
+    accessorKey: 'totalWeight',
+    header: 'PESO TOTAL',
   },
   {
-    accessorKey: 'peso',
-    header: 'PESO',
-  },
-  {
-    accessorKey: 'dataEntrega',
+    accessorKey: 'delivery_date',
     header: 'ENTREGA',
   },
 ]
