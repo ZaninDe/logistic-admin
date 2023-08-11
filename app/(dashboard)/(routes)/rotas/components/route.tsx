@@ -23,7 +23,7 @@ export default function RouteClient({ data }: RouteDataProps) {
       </div>
       <Separator />
 
-      <DataTable searchKey="pedido" columns={columns} data={data} />
+      <DataTable searchKey="nf" columns={columns} data={data} />
     </>
   )
 }
