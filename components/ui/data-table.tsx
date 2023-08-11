@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 import {
   ColumnDef,
@@ -21,7 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { DatePicker } from './date-picker'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -36,6 +39,9 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
+  const [deliveryDate, setDeliveryDate] = useState<Date>()
+  const [delivery, setDelivery] = useState('')
+
   const table = useReactTable({
     data,
     columns,
@@ -48,6 +54,18 @@ export function DataTable<TData, TValue>({
     },
   })
 
+  function handleChange(event: any) {
+    setDelivery(event.target.value)
+  }
+
+  useEffect(() => {
+    handleChange(event)
+    if (deliveryDate) {
+      setDelivery(format(deliveryDate, 'd/MM/yyyy', { locale: ptBR }))
+      table.getColumn('dataEntrega')?.setFilterValue(delivery)
+    }
+  }, [deliveryDate])
+
   return (
     <div>
       <div className="flex items-center py-4">
@@ -57,7 +75,19 @@ export function DataTable<TData, TValue>({
           onChange={(event) =>
             table.getColumn(searchKey)?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm mr-4"
+        />
+        <Input
+          value={
+            (table.getColumn('dataEntrega')?.getFilterValue() as string) ?? ''
+          }
+          onChange={handleChange}
+          className="max-w-sm hidden"
+        />
+        <DatePicker
+          deliveryDate={deliveryDate}
+          // @ts-ignore
+          onChangeDeliveryDate={setDeliveryDate}
         />
       </div>
       <div className="rounded-md border">
