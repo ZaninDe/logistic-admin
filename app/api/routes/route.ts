@@ -2,6 +2,7 @@ import axios from 'axios'
 import { NextResponse } from 'next/server'
 
 import prismadb from '@/app/libs/prismadb'
+import { Route } from '@prisma/client'
 
 const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY
 const origemFixaInicial =
@@ -10,11 +11,14 @@ const origemFixaInicial =
 interface AddressAndWeight {
   address: string
   totalWeight: number
+  order: string
+  deliveryDate?: string
 }
 
 interface VehicleWithAddresses {
   name: string
   addresses: string[]
+  orders: string[]
 }
 
 interface Vehicle {
@@ -37,8 +41,6 @@ async function getDistanceBetweenAddresses(
 
     const distanceText = response.data?.rows[0]?.elements[0]?.distance?.text
     if (distanceText) {
-      // O texto da distância é retornado em formato como "9.8 km" ou "12.5 mi", por exemplo.
-      // Aqui, estamos extraindo o valor numérico da distância.
       const distanceInKm = parseFloat(distanceText.split(' ')[0])
       return distanceInKm
     } else {
@@ -63,17 +65,16 @@ async function distanceToLastAddress(addresses: string[]): Promise<number> {
       lastAddress,
     )
     return distance
-  } catch (error) {
-    // Tratar erros de chamada à API aqui, se necessário.
+  } catch (error: any) {
     console.error('Erro ao calcular a distância:', error)
-    return 0 // Retornar um valor padrão em caso de falha na chamada à API.
+    throw new Error(error)
   }
 }
 
 async function optimizeRoutes(
   addressesAndCargo: AddressAndWeight[],
   vehicles: Vehicle[],
-): Promise<VehicleWithAddresses[]> {
+): Promise<string[][]> {
   const sortedAddresses = addressesAndCargo
 
   if (!sortedAddresses) {
@@ -81,12 +82,13 @@ async function optimizeRoutes(
     console.error('Erro ao obter endereços ordenados')
     return []
   }
-  const vehiclesWithRoutes: VehicleWithAddresses[] = []
+  const vehiclesWithRoutes: string[][] = []
 
   const assignedAddresses = new Set<string>()
 
   for (const vehicle of vehicles) {
     const currentVehicleRoutes: string[] = []
+    const orders: string[] = []
     let currentCargoAmount = 0
 
     for (const address of sortedAddresses) {
@@ -97,11 +99,12 @@ async function optimizeRoutes(
         assignedAddresses.add(address.address)
         currentCargoAmount += address.totalWeight
         currentVehicleRoutes.push(address.address)
+        orders.push(address.order)
       }
 
       if (currentVehicleRoutes.length > 0) {
         const distance = await distanceToLastAddress(currentVehicleRoutes)
-        if (distance > 35000) {
+        if (distance > 35) {
           assignedAddresses.delete(currentVehicleRoutes.pop()!) // Remove o endereço da rota e do conjunto de endereços atribuídos
           currentCargoAmount -= address.totalWeight
           break
@@ -110,32 +113,28 @@ async function optimizeRoutes(
     }
 
     if (currentVehicleRoutes.length > 0) {
-      vehiclesWithRoutes.push({
-        name: vehicle.name,
-        addresses: currentVehicleRoutes,
-      })
+      vehiclesWithRoutes.push(
+        // name: vehicle.name,
+        // addresses: currentVehicleRoutes,
+        orders,
+      )
     }
   }
-
   return vehiclesWithRoutes
 }
 
-async function getSortedAddresses(
-  addresses: AddressAndWeight[],
-): Promise<AddressAndWeight[]> {
+async function getSortedAddresses(addresses: AddressAndWeight[]) {
   try {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY
     const apiUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?key=${apiKey}`
     const destinations = addresses
       .map((endereco: AddressAndWeight) => encodeURIComponent(endereco.address))
       .join('|')
-
     const response = await axios.get(
       `${apiUrl}&origins=${origemFixaInicial}&destinations=${destinations}`,
     )
-
     const elements = response.data.rows[0].elements
-    const distancesWithAddresses = elements.map(
+    const distancesWithAddresses = elements?.map(
       (element: any, index: number) => {
         if (
           element.status === 'OK' &&
@@ -153,11 +152,9 @@ async function getSortedAddresses(
         }
       },
     )
-
     const sortedAddresses = distancesWithAddresses
       .sort((a: any, b: any) => a.distance - b.distance)
       .map((item: AddressAndWeight) => item.address)
-
     return sortedAddresses
   } catch (error) {
     console.log(error)
@@ -165,36 +162,38 @@ async function getSortedAddresses(
   }
 }
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
+  let routes: Route[]
   const sales = await prismadb.sale.findMany()
 
   const veiculos: Vehicle[] = [
-    { name: 'Veiculo 1', capacity: 30 },
-    { name: 'Veiculo 2', capacity: 60 },
-    { name: 'Veiculo 4', capacity: 70 },
-    { name: 'Veiculo 5', capacity: 500 },
-    { name: 'Veiculo 6', capacity: 500 },
+    { name: 'Veiculo 1', capacity: 400 },
+    { name: 'Veiculo 2', capacity: 400 },
+    { name: 'Veiculo 4', capacity: 400 },
+    { name: 'Veiculo 5', capacity: 800 },
+    { name: 'Veiculo 6', capacity: 800 },
+    { name: 'Veiculo 7', capacity: 800 },
   ]
 
   const adresses: AddressAndWeight[] = sales.map((sale) => ({
     address: sale.address,
     totalWeight: sale.totalWeight,
+    order: sale.orderCode,
   }))
 
   try {
     const sortedAddresses = await getSortedAddresses(adresses)
+    const delivery = await optimizeRoutes(sortedAddresses, veiculos)
 
-    const delivery = optimizeRoutes(await sortedAddresses, veiculos)
-      .then((optimizedRoutes) => {
-        console.log(optimizedRoutes)
+    delivery.map(async (item) => {
+      const route = await prismadb.route.createMany({
+        data: {
+          orders: item,
+        },
       })
-      .catch((error) => {
-        console.error('Erro ao otimizar rotas:', error)
-      })
+    })
 
-    console.log(delivery)
-
-    return NextResponse.json(delivery)
+    return NextResponse.json('Rotas criadas com sucesso!')
   } catch (error) {
     console.error(error)
     return new NextResponse('Internal error', { status: 500 })
