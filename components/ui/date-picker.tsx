@@ -30,11 +30,11 @@ export function DatePicker({
         <Button
           variant={'outline'}
           className={cn(
-            'w-[280px] justify-start text-left font-normal',
+            'w-[250px] justify-start text-left font-normal',
             !deliveryDate && 'text-muted-foreground',
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="mr-2 h-6 w-6" />
           {deliveryDate ? (
             format(deliveryDate, 'PPP', { locale: ptBR })
           ) : (

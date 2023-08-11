@@ -8,10 +8,10 @@ export type SalesColumn = {
   date_lib: string
   pedido: string
   nf: string
-  valor: number
+  valor: string
   cliente: string
   nome_fantasia: string
-  peso: number
+  peso: string
   vendedor: string
   endereco: string
   dataEntrega?: string
