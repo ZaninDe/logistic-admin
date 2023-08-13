@@ -162,6 +162,21 @@ async function getSortedAddresses(addresses: AddressAndWeight[]) {
   }
 }
 
+function unifyAddresses(arr: AddressAndWeight[]): AddressAndWeight[] {
+  const elements: { [key: string]: AddressAndWeight } = {}
+
+  arr.forEach((element) => {
+    if (elements[element.address]) {
+      elements[element.address].totalWeight += element.totalWeight
+      elements[element.address].order.push(...element.order)
+    } else {
+      elements[element.address] = { ...element }
+    }
+  })
+
+  return Object.values(elements)
+}
+
 export async function POST(request: Request) {
   let routes: Route[]
   const sales = await prismadb.sale.findMany()
@@ -180,6 +195,10 @@ export async function POST(request: Request) {
     totalWeight: sale.totalWeight,
     order: sale.orderCode,
   }))
+
+  const order = unifyAddresses(adresses)
+
+  console.log(order)
 
   try {
     const sortedAddresses = await getSortedAddresses(adresses)
