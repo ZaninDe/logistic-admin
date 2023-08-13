@@ -1,4 +1,4 @@
-import { format } from 'date-fns'
+import { format, addDays } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 import prismadb from '@/app/libs/prismadb'
@@ -15,7 +15,9 @@ export default async function SalesPage() {
     nf: item?.orderCode,
     nome_fantasia: item?.fantasyName,
     peso: item?.totalWeight,
-    dataEntrega: format(item?.deliveryDate, 'd/MM/yyyy', { locale: ptBR }),
+    dataEntrega: format(addDays(item?.deliveryDate, 1), 'd/MM/yyyy', {
+      locale: ptBR,
+    }),
   }))
 
   return (
